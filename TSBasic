@@ -1,0 +1,39 @@
+import pandas as pd
+import numpy as np
+from matplotlib import pyplot as plt
+
+# Creating a DataFrame for the batting averages
+data = {
+    'Year': [2019, 2020, 2021, 2022, 2023],
+    'Batting_Average': [0.272, 0.262, 0.311, 0.274, 0.264]
+}
+df = pd.DataFrame(data)
+df['Year'] = pd.to_datetime(df['Year'], format='%Y')
+df.set_index('Year', inplace=True)
+
+# Plotting the original data
+plt.figure(figsize=(10, 5))
+plt.plot(df.index, df['Batting_Average'], marker='o')
+plt.title('Player Batting Average Over Time')
+plt.xlabel('Year')
+plt.ylabel('Batting Average')
+plt.grid(True)
+plt.show()
+
+# Calculating a simple moving average
+df['SMA_3'] = df['Batting_Average'].rolling(window=3).mean()
+
+# Plotting the moving average
+plt.figure(figsize=(10, 5))
+plt.plot(df.index, df['Batting_Average'], label='Original', marker='o')
+plt.plot(df.index, df['SMA_3'], label='3-Year SMA', marker='o')
+plt.title('Player Batting Average and 3-Year SMA')
+plt.xlabel('Year')
+plt.ylabel('Batting Average')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Forecasting the next year's batting average using the simple average of last 3 years
+last_3_years_average = df['Batting_Average'][-3:].mean()
+print(f"Projected 2024 Batting Average: {last_3_years_average:.3f}")
