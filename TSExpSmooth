@@ -1,0 +1,32 @@
+import pandas as pd
+import numpy as np
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+import matplotlib.pyplot as plt
+
+# Creating a DataFrame for the batting averages
+data = {
+    'Year': [2019, 2020, 2021, 2022, 2023],
+    'Batting_Average': [0.272, 0.262, 0.311, 0.274, 0.264]
+}
+df = pd.DataFrame(data)
+df['Year'] = pd.to_datetime(df['Year'], format='%Y')
+df.set_index('Year', inplace=True)
+
+# Exponential Smoothing model setup
+model = ExponentialSmoothing(df['Batting_Average'], trend='add', seasonal=None, initialization_method='estimated')
+model_fit = model.fit()
+
+# Forecasting the next year's batting average
+forecast = model_fit.forecast(steps=1)
+print(f"Projected Batting Average for 2024: {forecast.iloc[0]:.3f}")
+
+# Plotting the results
+plt.figure(figsize=(10, 5))
+plt.plot(df.index, df['Batting_Average'], label='Actual Data', marker='o')
+plt.plot(pd.date_range(start=df.index[-1], periods=2, freq='A').shift(1, freq='D'), [df['Batting_Average'].iloc[-1], forecast.iloc[0]], label='Forecast', marker='o', linestyle='--')
+plt.title('Exponential Smoothing Forecast of Batting Average')
+plt.xlabel('Year')
+plt.ylabel('Batting Average')
+plt.legend()
+plt.grid(True)
+plt.show()
