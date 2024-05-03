@@ -1,0 +1,33 @@
+import pandas as pd
+import numpy as np
+from statsmodels.tsa.arima.model import ARIMA
+import matplotlib.pyplot as plt
+
+# Creating a DataFrame for the batting averages
+data = {
+    'Year': [2019, 2020, 2021, 2022, 2023],
+    'Batting_Average': [0.272, 0.262, 0.311, 0.274, 0.264]
+}
+df = pd.DataFrame(data)
+df['Year'] = pd.to_datetime(df['Year'], format='%Y')
+df.set_index('Year', inplace=True)
+
+# Fitting an ARIMA model
+# The order (p,d,q) needs to be determined; for simplicity, we'll use (1,0,1)
+model = ARIMA(df['Batting_Average'], order=(1,0,1))
+model_fit = model.fit()
+
+# Forecasting the next year's batting average
+forecast = model_fit.forecast(steps=1)
+print(f"Projected Batting Average for 2024: {forecast.iloc[0]:.3f}")
+
+# Plotting the results
+plt.figure(figsize=(10, 5))
+plt.plot(df.index, df['Batting_Average'], label='Original', marker='o')
+plt.plot(forecast.index, forecast, label='Forecast', color='red', marker='o')
+plt.title('ARIMA Forecast of Batting Average')
+plt.xlabel('Year')
+plt.ylabel('Batting Average')
+plt.legend()
+plt.grid(True)
+plt.show()
